@@ -1,5 +1,3 @@
-import sys
-import os
 import numpy as np
 import math as mt
 import utils.mathutils as mu
@@ -25,6 +23,7 @@ def get_max_container(datalist, diff):
     ceil_max = floor_max + diff
     return floor_max, ceil_max
 
+
 def checkcontainer(data, diff):
     dimensions = np.size(data, 1)
     floor = np.zeros(np.shape(data))
@@ -42,31 +41,46 @@ def readdata(path):
     return rawdata
 
 
-def sepdata(start_vec, org_data, delta, **kwargs):
+def sepdata(start_vec, org_data, seg_delta, **kwargs):
     '''
     seperate data
+
+    ---o--------o------------> y
+    |          / \
+    |         /   \
+    |        /     o
+    |       /       \
+    |      /         \
+    |     /           o
+    |    v
+    |    start_vec
+    |
+    v
+    x
     :param start_vec:
     :param org_data:
-    :param delta:
-    :param kwargs: criterion --- to judge if two equals
-            maxdeg --- maxdegree
+    :param seg_delta:
+    :param kwargs:
+            maxdeg --- max range of rotation
     :return:
     '''
+
+
     new_data = []
-    maxdeg = mt.pi
-    cri = 0.05
-
-    if 'criterion' in kwargs.keys():
-        cri = kwargs.get('criterion')
-    if 'maxdeg' in kwargs.keys():
-        maxdeg = kwargs.get('maxdeg')
-    total_sep = mt.floor(maxdeg / delta)
-
+    maxrot = mt.pi
+    y_vec = np.zeros([1, np.size(org_data, 1)])
+    y_vec[1] = 1
+    if 'maxrot' in kwargs.keys():
+        maxrot = kwargs.get('maxdeg')
+    total_sep = mt.floor(maxrot / seg_delta)
+    deg_to_y = mu.radianof(y_vec, start_vec)
     for i in range(0, total_sep):
-        ceil_angle = (i + 1) * delta
+        ceil_angle = (i + 1) * seg_delta
+        floor_angle = i * seg_delta
         this_datalist = []
         for data in org_data:
-            if mt.fabs(mu.degreeof(start_vec, data) - ceil_angle) < cri:
+            if (mu.radianof(data, y_vec) < deg_to_y or data[0] < 0) \
+                    and floor_angle <= mu.radianof(start_vec, data) < ceil_angle:
                 this_datalist.append(data)
         new_data.append(this_datalist)
     return new_data
