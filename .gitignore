@@ -2,4 +2,5 @@
 .vscode
 .idea
 *.pyc
+datatrim.py
 __pycache__

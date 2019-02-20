@@ -2,7 +2,7 @@
 
 import tkinter as tk
 import analyzer
-from analyzer import DEFAULT_IDX, DEFAULT_SEG, DEFAULT_PATH, DEFAULT_DIMEN, DEFAULT_DIFF, DEFAULT_ROT_ANG
+from analyzer import DEFAULT_IDX, DEFAULT_SEG, DEFAULT_PATH, DEFAULT_DIMEN, DEFAULT_ROT_ANG
 
 # import matplotlib
 # matplotlib.use("TkAgg")
@@ -17,7 +17,7 @@ allele = []
 DEFAULT_IDX_NAME = 'index'
 DEFAULT_SEG_NAME = 'range of angle of each segment'
 DEFAULT_DIMEN_NAME = 'dimensions'
-DEFAULT_DIFF_NAME = 'difference of a Monte Carlo container'
+# DEFAULT_DIFF_NAME = 'difference of a Monte Carlo container'
 DEFAULT_ROT_ANG_NAME = 'range of the rotation'
 PATH_REMINDER = 'path to file'
 INDEX_TXT = 'index of the start vector'
@@ -64,10 +64,10 @@ def launch():
     segment = textentries.get(DEFAULT_SEG_NAME).get()
     path = textentries.get(PATH_REMINDER).get()
     dim = textentries.get(DEFAULT_DIMEN_NAME).get()
-    diff = textentries.get(DEFAULT_DIFF_NAME).get()
-    ang = textentries.get(DEFAULT_ROT_ANG_NAME).get
+    # diff = textentries.get(DEFAULT_DIFF_NAME).get()
+    ang = textentries.get(DEFAULT_ROT_ANG_NAME).get()
     axes_syn = analyzer.main(
-        [analyzer.__name__, '-p', path, '-i', index, '-s', segment, '-D', dim, '-d', diff, '-r', ang])
+        [analyzer.__name__, '-p', path, '-i', index, '-s', segment, '-D', dim, '-r', ang])
     # plot on a figure
     return axes_syn
 
@@ -82,8 +82,8 @@ def main():
     createentry(root, DEFAULT_PATH, PATH_REMINDER)
     createlabel(root, DEFAULT_DIMEN_NAME)
     createentry(root, DEFAULT_DIMEN, DEFAULT_DIMEN_NAME)
-    createlabel(root, DEFAULT_DIFF_NAME)
-    createentry(root, DEFAULT_DIFF, DEFAULT_DIFF_NAME)
+    # createlabel(root, DEFAULT_DIFF_NAME)
+    # createentry(root, DEFAULT_DIFF, DEFAULT_DIFF_NAME)
     createlabel(root, DEFAULT_ROT_ANG_NAME)
     createentry(root, DEFAULT_ROT_ANG, DEFAULT_ROT_ANG_NAME)
     createbutton(root, BUTTON_CALLBACK_TXT, launch)

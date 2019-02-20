@@ -41,11 +41,12 @@ def readdata(path):
     return rawdata
 
 
-def sepdata(start_vec, org_data, seg_delta, **kwargs):
+def sepdata(org_data, start_vec, seg_delta, **kwargs):
     '''
     seperate data
 
-    ---o--------o------------> y
+    X = z axis
+    X---o--------o------------> y
     |          / \
     |         /   \
     |        /     o
@@ -64,23 +65,28 @@ def sepdata(start_vec, org_data, seg_delta, **kwargs):
             maxdeg --- max range of rotation
     :return:
     '''
-
-
+    markers = 4
     new_data = []
     maxrot = mt.pi
-    y_vec = np.zeros([1, np.size(org_data, 1)])
-    y_vec[1] = 1
+    dim = len(start_vec)
+    y_vec = np.zeros([1, dim])
+    y_vec[0, 1] = 1
     if 'maxrot' in kwargs.keys():
-        maxrot = kwargs.get('maxdeg')
+        maxrot = kwargs.get('maxrot')
     total_sep = mt.floor(maxrot / seg_delta)
-    deg_to_y = mu.radianof(y_vec, start_vec)
+    # rad2y = mu.radianof(y_vec, start_vec)[0, 0]
+    vec = org_data[:, dim * (markers - 1):] - org_data[:, dim: dim * 2]
+    rad2start = mu.radianof(vec, start_vec)
+
     for i in range(0, total_sep):
-        ceil_angle = (i + 1) * seg_delta
-        floor_angle = i * seg_delta
-        this_datalist = []
-        for data in org_data:
-            if (mu.radianof(data, y_vec) < deg_to_y or data[0] < 0) \
-                    and floor_angle <= mu.radianof(start_vec, data) < ceil_angle:
-                this_datalist.append(data)
-        new_data.append(this_datalist)
+        new_data.append([])
+    for i in range(0, len(vec)):
+        this_vec = vec[i, :]
+        this_ang = rad2start[i, :][0]
+        for j in range(0, total_sep):
+            ceil_angle = (j + 1) * seg_delta
+            floor_angle = j * seg_delta
+            if floor_angle <= this_ang < ceil_angle:
+                new_data[j].append(this_vec)
+                break
     return new_data
