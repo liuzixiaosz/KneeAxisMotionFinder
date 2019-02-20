@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import matplotlib
+
 matplotlib.use('TkAgg')
 import sys
 import getopt
@@ -99,21 +100,21 @@ def rot_step1(alldata, dim):
     return alldata
 
 
-def plot_data(data, fig):
-    ax = Axes3D(fig)
+def plot_data(data, ax):
+
     for d in data:
         d = np.array(d)
         if d.size != 0:
             ax.scatter(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
-    return fig
+    return ax
 
 
-# def plot_axes(axes, segdeg=1):
-#     plt.figure(2)
-#     index = 1
-#     for itm in axes.itemset():
-#         plt.subplot(len(axes), 1, index)
-#         index += 1
+def plot_axes(dict_, ax, scale=100):
+    for k in dict_.keys():
+        d = np.vstack((np.array([0, 0, 0]), dict_.get(k))) * scale
+        ax.plot(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
+    return ax
+
 
 def main(argv):
     '''
@@ -147,21 +148,25 @@ def main(argv):
 
     start_vec = set_start_vec(index_org_vec, rec_data, y_vec)
     seped_datalists = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
+    ax = Axes3D(FIG1)
+    plot_data(seped_datalists, ax)
 
-    plot_data(seped_datalists, FIG1)
-    plt.show()
     axes_syn = {}
     for listidx in range(0, len(seped_datalists)):
         if len(seped_datalists[listidx]) == 0:
             continue
         # w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_datalists[listidx])
         # axes = w_fit
-        # axes_syn[listidx] = axes
+
         # # show_fit(w_fit, C_fit, r_fit, seped_datalists[listidx])
+        data_this = np.array(seped_datalists[listidx])
+        r = mu.plane_fitting(data_this[:, 0], data_this[:, 1], data_this[:, 2])
+        axes_syn[listidx] = mu.normal_vec_plane(r[0][0], r[0][1])
 
-
+    plot_axes(axes_syn, ax)
     print('end fitting')
     print(str(axes_syn))
+    plt.show()
     return axes_syn
 
 

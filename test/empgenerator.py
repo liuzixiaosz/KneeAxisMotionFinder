@@ -48,10 +48,10 @@ def write(data):
 def main():
     base = setbase(SIZE)
     noise = setnoise(base.shape, scale=0.1)
-    data = base + noise
+    data = base #+ noise
     axes_raw = setaxes(SEGS)
     noise2 = setnoise(axes_raw.shape, scale=0.1)
-    axes = axes_raw  # + noise2
+    axes = axes_raw / mu.lengthvec(axes_raw)
     start_vec = np.array(data[0, DIM * (MARKS - 1):] - data[0, DIM: 2 * DIM])
     for i in range(1, SIZE):
         # thisvec = np.array(data[i, DIM * (MARKS - 1):] - data[i, DIM: 2 * DIM])

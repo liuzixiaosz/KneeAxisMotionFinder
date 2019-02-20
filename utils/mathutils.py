@@ -2,6 +2,28 @@ import numpy as np
 import math as mt
 import scipy.optimize as opt
 from cylinder_fitting import fitting as cf
+import scipy.optimize as opt
+
+
+def normal_vec_plane(a, b, c=-1):
+    '''
+    ax + by + d = cz
+    ax - by - cz = d
+    :param a:
+    :param b:
+    :param c:
+    :return:
+    '''
+    vec = np.array([a, b, c])
+    return vec / lengthvec(np.array([vec]))
+
+
+def plane_fitting(x, y, z):
+    def f(param):
+        a, b, c = param
+        return a * (x ** 2) + b * (y ** 2) + c - z
+    r = opt.leastsq(f, np.array([0, 0, 1]))
+    return r
 
 
 def lengthvec(vec):
