@@ -9,6 +9,7 @@ import utils.dataprocess as dp
 import utils.mathutils as mu
 from cylinder_fitting import show_fit
 import matplotlib.pyplot as plt
+
 from mpl_toolkits.mplot3d import Axes3D
 
 DEFAULT_IDX = -1
@@ -18,7 +19,7 @@ DEFAULT_DIMEN = 3
 # DEFAULT_DIFF = 0.5
 DEFAULT_ROT_ANG = 90
 MARKERS = 4
-
+FIG1 = plt.figure()
 
 def set_start_vec(index, alldata, refvec):
     dim = refvec.size
@@ -96,16 +97,13 @@ def rot_step1(alldata, dim):
     return alldata
 
 
-def plot_data(data):
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    syn_data = []
-    for d in data:
-        syn_data += d
-    d = np.array(syn_data)
-    ax.scatter(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
+def plot_data(data, fig):
 
-    plt.show()
+    ax = Axes3D(fig)
+    for d in data:
+        d = np.array(d)
+        if d.size != 0:
+            ax.scatter(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
 
 
 # def plot_axes(axes, segdeg=1):
@@ -147,7 +145,9 @@ def main(argv):
 
     start_vec = set_start_vec(index_org_vec, rec_data, y_vec)
     seped_datalists = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
-    plot_data(seped_datalists)
+
+    plot_data(seped_datalists, FIG1)
+    plt.show()
     axes_syn = {}
     for listidx in range(0, len(seped_datalists)):
         if len(seped_datalists[listidx]) == 0:
@@ -155,7 +155,8 @@ def main(argv):
         w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_datalists[listidx])
         axes = w_fit
         axes_syn[listidx] = axes
-    # plot_axes(axes)
+        show_fit(w_fit, C_fit, r_fit, seped_datalists[listidx])
+
     print('end fitting')
     print(str(axes_syn))
     return axes_syn
