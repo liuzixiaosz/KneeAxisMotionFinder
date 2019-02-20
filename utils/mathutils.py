@@ -21,7 +21,7 @@ def normal_vec_plane(a, b, c=-1):
 def plane_fitting(x, y, z):
     def f(param):
         a, b, c = param
-        return a * (x ** 2) + b * (y ** 2) + c - z
+        return a * x + b * y + c - z
     r = opt.leastsq(f, np.array([0, 0, 1]))
     return r
 
