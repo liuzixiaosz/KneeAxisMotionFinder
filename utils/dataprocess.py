@@ -73,7 +73,7 @@ def sepdata(org_data, start_vec, seg_delta, **kwargs):
     y_vec[0, 1] = 1
     if 'maxrot' in kwargs.keys():
         maxrot = kwargs.get('maxrot')
-    total_sep = mt.floor(maxrot / seg_delta)
+    total_sep = round(maxrot / seg_delta)
     # rad2y = mu.radianof(y_vec, start_vec)[0, 0]
     vec = org_data[:, dim * (markers - 1):] - org_data[:, dim: dim * 2]
     rad2start = mu.radianof(vec, start_vec)

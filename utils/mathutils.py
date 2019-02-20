@@ -19,6 +19,13 @@ def normal_vec_plane(a, b, c=-1):
 
 
 def plane_fitting(x, y, z):
+    '''
+    z = ax + by + c
+    :param x:
+    :param y:
+    :param z:
+    :return: r with [[a, b, c], 1]
+    '''
     def f(param):
         a, b, c = param
         return a * x + b * y + c - z

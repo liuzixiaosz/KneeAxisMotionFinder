@@ -2,7 +2,7 @@
 
 import tkinter as tk
 import analyzer
-from analyzer import DEFAULT_IDX, DEFAULT_SEG, DEFAULT_PATH, DEFAULT_DIMEN, DEFAULT_ROT_ANG
+from analyzer import DEFAULT_IDX, DEFAULT_SEG_DEG, DEFAULT_PATH, DEFAULT_DIMEN, DEFAULT_ROT_ANG
 
 # import matplotlib
 # matplotlib.use("TkAgg")
@@ -77,7 +77,7 @@ def main():
     createlabel(root, INDEX_TXT)
     createentry(root, str(DEFAULT_IDX), DEFAULT_IDX_NAME)
     createlabel(root, DEGREE_SEGMENT_TXT)
-    createentry(root, str(DEFAULT_SEG), DEFAULT_SEG_NAME)
+    createentry(root, str(DEFAULT_SEG_DEG), DEFAULT_SEG_NAME)
     createlabel(root, PATH_REMINDER)
     createentry(root, DEFAULT_PATH, PATH_REMINDER)
     createlabel(root, DEFAULT_DIMEN_NAME)

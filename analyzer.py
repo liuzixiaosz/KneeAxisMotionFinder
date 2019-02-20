@@ -14,8 +14,8 @@ from cylinder_fitting import show_fit
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-DEFAULT_IDX = -1
-DEFAULT_SEG = 10
+DEFAULT_IDX = 0
+DEFAULT_SEG_DEG = 10
 DEFAULT_PATH = 'data.txt'
 DEFAULT_DIMEN = 3
 # DEFAULT_DIFF = 0.5
@@ -30,12 +30,12 @@ def set_start_vec(index, alldata, refvec):
         maxang = 0
         index = 0
         for i in range(0, len(alldata)):
-            this_vec = alldata[i][dim * (MARKERS - 1):] - alldata[i][dim * (MARKERS - 3): dim * (MARKERS - 2)]
+            this_vec = alldata[i, dim * (MARKERS - 1):] - alldata[i, dim * (MARKERS - 3): dim * (MARKERS - 2)]
             this_ang = mu.radianof(this_vec, refvec)
             if this_ang > maxang:
                 maxang = this_ang
                 index = i
-    return alldata[index][dim: 2 * dim]
+    return alldata[index, dim * (MARKERS - 1):] - alldata[index, dim * (MARKERS - 3): dim * (MARKERS - 2)]
 
 
 def parseargv(argv):
@@ -47,7 +47,7 @@ def parseargv(argv):
         sys.exit(0)
     path = DEFAULT_PATH
     index = DEFAULT_IDX
-    delta_seg = DEFAULT_SEG
+    delta_seg = DEFAULT_SEG_DEG
     dimension = DEFAULT_DIMEN
     # diff = DEFAULT_DIFF
     ang_rng = DEFAULT_ROT_ANG
@@ -142,10 +142,6 @@ def main(argv):
         rec_data[:, this_start: this_end] = rectified
 
     rec_data = rot_step1(rec_data, dimensions)
-    # if dimensions > 2:
-    #     rec_data = rot_step2(rec_data)
-    #     rec_data = rot_step3(rec_data)
-
     start_vec = set_start_vec(index_org_vec, rec_data, y_vec)
     seped_datalists = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
     ax = Axes3D(FIG1)
@@ -153,7 +149,7 @@ def main(argv):
 
     axes_syn = {}
     for listidx in range(0, len(seped_datalists)):
-        if len(seped_datalists[listidx]) == 0:
+        if len(seped_datalists[listidx]) < 3:
             continue
         # w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_datalists[listidx])
         # axes = w_fit
