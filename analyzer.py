@@ -8,6 +8,8 @@ import math as mt
 import utils.dataprocess as dp
 import utils.mathutils as mu
 from cylinder_fitting import show_fit
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 DEFAULT_IDX = -1
 DEFAULT_SEG = 10
@@ -94,6 +96,25 @@ def rot_step1(alldata, dim):
     return alldata
 
 
+def plot_data(data):
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    syn_data = []
+    for d in data:
+        syn_data += d
+    d = np.array(syn_data)
+    ax.scatter(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
+
+    plt.show()
+
+
+# def plot_axes(axes, segdeg=1):
+#     plt.figure(2)
+#     index = 1
+#     for itm in axes.itemset():
+#         plt.subplot(len(axes), 1, index)
+#         index += 1
+
 def main(argv):
     '''
 
@@ -126,15 +147,16 @@ def main(argv):
 
     start_vec = set_start_vec(index_org_vec, rec_data, y_vec)
     seped_datalists = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
+    plot_data(seped_datalists)
     axes_syn = {}
     for listidx in range(0, len(seped_datalists)):
         if len(seped_datalists[listidx]) == 0:
             continue
-        axes, center_fit, radius_fit, fit_err = mu.cylinderfitting.fit(seped_datalists[listidx])
-        # floor, ceil = dp.get_max_container(axes, diff)
-        # center = floor + ceil / 2
+        w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_datalists[listidx])
+        axes = w_fit
         axes_syn[listidx] = axes
-        show_fit(axes, center_fit, radius_fit, seped_datalists[listidx])
+    # plot_axes(axes)
+    print('end fitting')
     print(str(axes_syn))
     return axes_syn
 

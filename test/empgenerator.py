@@ -8,7 +8,7 @@ PATH = "../data.txt"
 MAX_RNG = math.pi / 2
 DELTA_SEG = MAX_RNG / 18
 SEGS = int(MAX_RNG / DELTA_SEG)
-SIZE = 10000
+SIZE = 1000
 MARKS = 4
 DIM = 3
 
@@ -26,11 +26,11 @@ def setnoise(s_turp, loc=0, scale=0.1):
 
 
 def setaxes(segs):
-    delta = random.random() / 10 / segs
+    d = random.random() / 10 / segs
     axes = np.zeros([segs, DIM])
     axes[:, 2] = 1
     for i in range(0, segs):
-        axes[i, 0] = delta * i
+        axes[i, 0] = d * i
     return axes
 
 
@@ -51,12 +51,14 @@ def main():
     data = base + noise
     axes_raw = setaxes(SEGS)
     noise2 = setnoise(axes_raw.shape, scale=0.1)
-    axes = axes_raw + noise2
-    for i in range(0, SIZE):
-        thisvec = np.array(data[i, -DIM:] - data[i, DIM: 2 * DIM])
+    axes = axes_raw  # + noise2
+    start_vec = np.array(data[0, DIM * (MARKS - 1):] - data[0, DIM: 2 * DIM])
+    for i in range(1, SIZE):
+        # thisvec = np.array(data[i, DIM * (MARKS - 1):] - data[i, DIM: 2 * DIM])
         index = random.randint(0, SEGS - 1)
-        rotated = mu.rot(thisvec, index * DELTA_SEG + random.random() * DELTA_SEG, [-axes[index, :]])
-        data[i, -DIM:] = data[i, DIM: 2 * DIM] + rotated
+        rotated = mu.rot(start_vec, index * DELTA_SEG + random.random() * DELTA_SEG, [-axes[index, :]])
+        data[i, DIM * (MARKS - 1):] = data[i, DIM: 2 * DIM] + rotated
+    np.savetxt('refaxis.txt', axes, delimiter=',')
     np.savetxt(PATH, data, delimiter=',')
 
 
