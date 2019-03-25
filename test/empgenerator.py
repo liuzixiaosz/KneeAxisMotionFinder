@@ -26,7 +26,7 @@ def setnoise(s_turp, loc=0, scale=0.1):
 
 
 def setaxes(segs):
-    d = random.random() / 20 / segs
+    d = random.random() / segs
     axes = np.zeros([segs, DIM])
     axes[:, 2] = -1
     for i in range(0, segs):
@@ -46,7 +46,7 @@ def frac():
 def main():
     base = setbase(SIZE)
     noise = setnoise(base.shape, scale=0.01)
-    data = base #+ noise
+    data = base + noise
     axes_raw = setaxes(DEFAULT_SEG_DEG)
     noise2 = setnoise(axes_raw.shape, scale=0.1)
     axes = axes_raw / mu.lengthvec(axes_raw)
