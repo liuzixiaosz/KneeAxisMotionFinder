@@ -67,6 +67,7 @@ def sepdata(org_data, start_vec, seg_delta, **kwargs):
     '''
     markers = 4
     new_data = []
+    end_marked = []
     maxrot = mt.pi
     dim = len(start_vec)
     y_vec = np.zeros([1, dim])
@@ -80,13 +81,14 @@ def sepdata(org_data, start_vec, seg_delta, **kwargs):
 
     for i in range(0, total_sep):
         new_data.append([])
+        end_marked.append([])
     for i in range(0, len(vec)):
-        this_vec = vec[i, :]
         this_ang = rad2start[i, :][0]
         for j in range(0, total_sep):
             ceil_angle = (j + 1) * seg_delta
             floor_angle = j * seg_delta
             if floor_angle <= this_ang < ceil_angle:
-                new_data[j].append(this_vec)
+                new_data[j].append(org_data[i, :])
+                end_marked[j].append(org_data[i, (markers - 1) * dim:])
                 break
-    return new_data
+    return new_data, end_marked

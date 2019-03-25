@@ -101,7 +101,6 @@ def rot_step1(alldata, dim):
 
 
 def plot_data(data, ax):
-
     for d in data:
         d = np.array(d)
         if d.size != 0:
@@ -109,9 +108,9 @@ def plot_data(data, ax):
     return ax
 
 
-def plot_axes(dict_, ax, scale=100):
-    for k in dict_.keys():
-        d = np.vstack((np.array([0, 0, 0]), dict_.get(k))) * scale
+def plot_axes(center_dict, ax_dict, ax, scale=100):
+    for k in ax_dict.keys():
+        d = np.vstack((center_dict.get(k), ax_dict.get(k) + center_dict.get(k))) * scale
         ax.plot(xs=d[:, 0], ys=d[:, 1], zs=d[:, 2])
     return ax
 
@@ -138,28 +137,37 @@ def main(argv):
     for mk in range(0, MARKERS):
         this_start = mk * dimensions
         this_end = this_start + dimensions
+
+        # rectify coordinate: all minus the first marked.
         rectified = mu.cordrectify(rawdata[:, this_start: this_end], rawdata[:, 0: dimensions])
         rec_data[:, this_start: this_end] = rectified
 
     rec_data = rot_step1(rec_data, dimensions)
     start_vec = set_start_vec(index_org_vec, rec_data, y_vec)
-    seped_datalists = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
+    seped_datalists, seped_marker4 = dp.sepdata(rec_data, start_vec, delta_seg, maxrot=ang_rng)
     ax = Axes3D(FIG1)
-    plot_data(seped_datalists, ax)
+    plot_data(seped_marker4, ax)
 
     axes_syn = {}
-    for listidx in range(0, len(seped_datalists)):
-        if len(seped_datalists[listidx]) < 3:
+    center_syn = {}
+    for l_idx in range(0, len(seped_marker4)):
+        if len(seped_marker4[l_idx]) < 3:
             continue
-        # w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_datalists[listidx])
+
+        # plt.figure(l_idx)
+        # w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_marker4[l_idx])
         # axes = w_fit
+        #
+        # show_fit(w_fit, C_fit, r_fit, seped_marker4[l_idx])
 
-        # # show_fit(w_fit, C_fit, r_fit, seped_datalists[listidx])
-        data_this = np.array(seped_datalists[listidx])
+        data_this = np.array(seped_marker4[l_idx])
         r = mu.plane_fitting(data_this[:, 0], data_this[:, 1], data_this[:, 2])
-        axes_syn[listidx] = mu.normal_vec_plane(r[0][0], r[0][1])
+        xyz = mu.spherefit_center(data_this)
+        tmp_line = mu.normal_vec_plane(r[0][0], r[0][1])
+        axes_syn[l_idx] = tmp_line
+        center_syn[l_idx] = np.array([xyz[0][0], xyz[1][0], xyz[2][0]])
 
-    plot_axes(axes_syn, ax)
+    plot_axes(center_syn, axes_syn, ax, scale=1)
     print('end fitting')
     print(str(axes_syn))
     plt.show()
