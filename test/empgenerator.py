@@ -45,7 +45,7 @@ def frac():
 
 def main():
     base = setbase(SIZE)
-    noise = setnoise(base.shape, scale=0.1)
+    noise = setnoise(base.shape, scale=0.01)
     data = base #+ noise
     axes_raw = setaxes(DEFAULT_SEG_DEG)
     noise2 = setnoise(axes_raw.shape, scale=0.1)

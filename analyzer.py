@@ -18,7 +18,7 @@ DEFAULT_IDX = 0
 DEFAULT_SEG_DEG = 10
 DEFAULT_PATH = 'data.txt'
 DEFAULT_DIMEN = 3
-# DEFAULT_DIFF = 0.5
+DEFAULT_METHOD_NUMBER = 1
 DEFAULT_ROT_ANG = 90
 MARKERS = 4
 FIG1 = plt.figure()
@@ -40,16 +40,16 @@ def set_start_vec(index, alldata, refvec):
 
 def parseargv(argv):
     try:
-        opts, args = getopt.getopt(args=argv, shortopts='p:i:D:s:',
-                                   longopts=['path=', 'dimension=', 'segment=', 'index='])
+        opts, args = getopt.getopt(args=argv, shortopts='p:i:d:s:m:r:',
+                                   longopts=['path=', 'dimension=', 'segment=', 'index=', 'method='])
     except getopt.GetoptError:
         print('args error')
         sys.exit(0)
     path = DEFAULT_PATH
     index = DEFAULT_IDX
     delta_seg = DEFAULT_SEG_DEG
+    method = DEFAULT_METHOD_NUMBER
     dimension = DEFAULT_DIMEN
-    # diff = DEFAULT_DIFF
     ang_rng = DEFAULT_ROT_ANG
     for o in opts:
         if o[0] == '-p' or o[0] == '--path':
@@ -58,14 +58,14 @@ def parseargv(argv):
             index = int(o[1])
         if o[0] == '-s' or o[0] == '--segment':
             delta_seg = float(o[1])
-        if o[0] == '-D' or o[0] == '--dimension':
+        if o[0] == '-d' or o[0] == '--dimension':
             dimension = int(o[1])
-        # if o[0] == '-d' or o[0] == '--diff':
-        #     diff = float(o[1])
+        if o[0] == '-m' or o[0] == '--method':
+            method = int(o[1])
         if o[0] == '-r' or o[0] == '--range':
             ang_rng = float(o[1])
     # return path, index, delta_seg, dimension, diff, ang_rng
-    return path, index, delta_seg, dimension, ang_rng
+    return path, index, delta_seg, dimension, ang_rng, method
 
 
 def rot_step1(alldata, dim):
@@ -121,7 +121,7 @@ def main(argv):
     :param argv: path to file
     :return:
     '''
-    path, index_org_vec, delta_seg, dimensions, ang_rng = parseargv(argv)
+    path, index_org_vec, delta_seg, dimensions, ang_rng, method = parseargv(argv[1:])
     print('start analyzing ...')
     delta_seg = mt.radians(delta_seg)
     rawdata = np.array(dp.readdata(path))
@@ -153,19 +153,18 @@ def main(argv):
     for l_idx in range(0, len(seped_marker4)):
         if len(seped_marker4[l_idx]) < 3:
             continue
-
-        # plt.figure(l_idx)
-        # w_fit, C_fit, r_fit, fit_err = mu.cf.fit(seped_marker4[l_idx])
-        # axes = w_fit
-        #
-        # show_fit(w_fit, C_fit, r_fit, seped_marker4[l_idx])
-
         data_this = np.array(seped_marker4[l_idx])
-        r = mu.plane_fitting(data_this[:, 0], data_this[:, 1], data_this[:, 2])
-        xyz = mu.spherefit_center(data_this)
-        tmp_line = mu.normal_vec_plane(r[0][0], r[0][1])
-        axes_syn[l_idx] = tmp_line
-        center_syn[l_idx] = np.array([xyz[0][0], xyz[1][0], xyz[2][0]])
+        if method == 1:
+            plt.figure(l_idx)
+            w_fit, c_fit, r_fit, fit_err = mu.cf.fit(data_this)
+            axes_syn[l_idx] = w_fit
+            center_syn[l_idx] = np.array([c_fit[0], c_fit[1], c_fit[2]])
+
+        elif method == 2:
+            r = mu.plane_fitting(data_this[:, 0], data_this[:, 1], data_this[:, 2])
+            xyz = mu.spherefit_center(data_this)
+            axes_syn[l_idx] = mu.normal_vec_plane(r[0][0], r[0][1])
+            center_syn[l_idx] = np.array([xyz[0][0], xyz[1][0], xyz[2][0]])
 
     plot_axes(center_syn, axes_syn, ax, scale=1)
     print('end fitting')
