@@ -41,6 +41,16 @@ def readdata(path):
     return rawdata
 
 
+def remove_nan_rows(data):
+    to_rm = []
+    cnt = 0
+    for d in data:
+        if any(np.isnan(d)):
+            to_rm.append(cnt)
+        cnt += 1
+    return np.delete(data, to_rm, 0)
+
+
 def sepdata(org_data, start_vec, seg_delta, **kwargs):
     '''
     seperate data

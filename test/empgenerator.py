@@ -26,7 +26,7 @@ def setnoise(s_turp, loc=0, scale=0.1):
 
 
 def setaxes(segs):
-    d = random.random() / segs
+    d = random.random() / segs / 20
     axes = np.zeros([segs, DIM])
     axes[:, 2] = -1
     for i in range(0, segs):

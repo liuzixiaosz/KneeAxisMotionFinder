@@ -125,6 +125,7 @@ def main(argv):
     print('start analyzing ...')
     delta_seg = mt.radians(delta_seg)
     rawdata = np.array(dp.readdata(path))
+    rawdata = dp.remove_nan_rows(rawdata)
     rec_data = np.zeros(rawdata.shape)
     y_vec = np.zeros([1, dimensions])
     y_vec[0, 1] = 1
